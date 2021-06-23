@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "fable-splitter App.fsproj --allFiles -w -o dist & next dev dist",
-    "build": "fable-splitter App.fsproj --allFiles -d -o dist && next build dist",
+    "dev": "dotnet fable watch -s -o dist --run next dev dist",
+    "build": "dotnet fable -o dist --run next build dist",
     "start": "next start"
   },
   "dependencies": {
@@ -15,7 +15,6 @@
   "devDependencies": {
     "@tailwindcss/forms": "^0.3.3",
     "autoprefixer": "^10.0.4",
-    "fable-splitter": "^2.2.1",
     "postcss": "^8.1.10",
     "tailwindcss": "^2.1.1"
   }

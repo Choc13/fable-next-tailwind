@@ -1,22 +1,30 @@
-module Pages.Index
+module Pages.App
 
 open Fable.Core.JsInterop
 open Fable.React
-open Fable.React.Props
 open NextJS
-open Footer
 
-importAll "${entryDir}/styles/global.css"
+importAll "../styles/global.css"
 
-let home () =
-    div [] [ 
-        Next.Head(
-           Head.children [
-               title [] [ str "Symbolica" ]
-               meta [ Name "title"; Props.Content "Symbolica" ] ]
-        )
-        str "Fable yo Next.js"
-        footer()
-    ]
+type AppProps =
+    { Component: ReactElementType<obj>
+      PageProps: obj }
 
-home |> exportDefault
+let app =
+    FunctionComponent.Of(
+        (fun { Component = pageComponent
+               PageProps = pageProps } ->
+            fragment [] [
+                Next.Head(
+                    Head.children [ title [] [ str "Symbolica" ]
+                                    meta [ Props.Name "viewport"
+                                           Props.Content "width=device-width, initial-scale=1.0" ] ]
+                )
+                Nav.View()
+                ReactElementType.create pageComponent pageProps []
+                Footer.view
+            ]),
+        memoizeWith = equalsButFunctions
+    )
+
+app |> exportDefault

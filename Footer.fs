@@ -3,7 +3,7 @@ module Footer
 open Fable.React
 open Fable.React.Props
 
-let footer () =
+let view =
     footer [ ClassName "py-5 bg-primary text-white text-center py-10 space-y-10" ] [
         div [ ClassName "xl:container grid grid-flow-row lg:grid-flow-col lg:grid-cols-3 gap-10" ] [
             div [ ClassName "space-y-10" ] [
@@ -30,7 +30,22 @@ let footer () =
                         ClassName "col-start-3"
                         Rel "noopener"
                         AriaLabel "GitHub" ] [
-
+                            Icons.gitHub 35
+                    ]
+                    a [ Href "https://dev.to/Symbolica"
+                        Rel "noopener"
+                        AriaLabel "Blog" ] [
+                            Icons.devTo 35
+                    ]
+                    a [ Href "https://twitter.com/SymbolicaDev"
+                        Rel "noopener"
+                        AriaLabel "Twitter" ] [
+                            Icons.twitter 35
+                    ]
+                    a [ Href "https://www.linkedin.com/company/symbolicadev"
+                        Rel "noopener"
+                        AriaLabel "LinkedIn" ] [
+                            Icons.linkedIn 35
                     ]
                 ]
             ]
