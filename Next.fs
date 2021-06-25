@@ -357,3 +357,68 @@ module Document =
     let nextScript (props: OriginProps seq) children : ReactElement =
         let propsObject = keyValueList CaseRules.LowerFirst props
         ofImport "NextScript" "next/document" propsObject children
+
+module Image =
+    type ImageLoader =
+        interface
+        end
+
+    [<StringEnum>]
+    type LoadingValue =
+        | Lazy
+        | Eager
+
+    [<StringEnum>]
+    type LayoutValue =
+        | Fill
+        | Fixed
+        | Intrinsic
+        | Responsive
+
+    [<StringEnum>]
+    type PlaceholderValue =
+        | Blue
+        | Empty
+
+    type StaticImageData =
+        { Src: string
+          Height: float
+          Width: float
+          BlurDataUrl: string }
+
+    type StaticRequire = { Default: StaticImageData }
+
+    type StaticImport = U2<StaticRequire, StaticImageData>
+
+    type ImageProps =
+        | Loader of ImageLoader
+        | Quality of U2<float, string>
+        | Loading of LoadingValue
+        | Unoptimized of bool
+        | ObjectFit of string
+        | ObjectPosition of obj
+        | Src of U2<string, StaticImport>
+        | Width of U2<int, string>
+        | Height of U2<int, string>
+        | Layout of LayoutValue
+        | Placeholder of PlaceholderValue
+        | BlurDataUrl of string
+
+    let image (props: U2<ImageProps, HTMLAttr> seq) : ReactElement =
+        ofImport "default" "next/image" (keyValueList CaseRules.LowerFirst props) []
+
+module Link =
+    type Url = U2<string, Node.Url.UrlObject>
+
+    type LinkProps =
+        | Href of Url
+        | As of Url
+        | Replace of bool
+        | Scroll of bool
+        | Shallow of bool
+        | PassHref of bool
+        | Prefetch of bool
+        | Locale of string
+
+    let link (props: LinkProps seq) children : ReactElement =
+        ofImport "default" "next/link" (keyValueList CaseRules.LowerFirst props) children

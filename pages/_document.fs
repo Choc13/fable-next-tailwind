@@ -24,9 +24,9 @@ let csp nonce isDev =
 
     $"""
 default-src;
-script-src {nonceDirective} 'strict-dynamic' 'unsafe-eval' 'unsafe-inline';
-style-src {if isDev then "*" else nonceDirective} 'unsafe-inline';
-img-src 'self';
+script-src {nonceDirective} 'strict-dynamic' {if isDev then "'unsafe-eval'" else ""} 'unsafe-inline';
+style-src 'self' https://fonts.googleapis.com {if isDev then "" else nonceDirective} 'unsafe-inline';
+img-src 'self' data:;
 font-src https://fonts.gstatic.com;
 frame-src https://app.netlify.com;
 {if isDev then
@@ -45,6 +45,7 @@ block-all-mixed-content;
 report-uri https://symbolica.report-uri.com/r/d/csp/enforce"""
         .Replace(System.Environment.NewLine, "")
 
+// fsharplint:disable InterfaceNames MemberNames
 type DocumentProps =
     abstract Nonce : string
     inherit Next.DocumentProps
@@ -56,7 +57,11 @@ type Document(initialProps) =
     static member getInitialProps(ctx) =
         promise {
             let! initialProps = Next.Document<_>.getInitialProps (ctx)
-            let nonce = "anonce" // TODO: Generate a proper nonce
+
+            let nonce =
+                crypto
+                    .randomBytes(16.)
+                    .toString (Node.Buffer.BufferEncoding.Base64)
 
             let csp =
                 csp nonce (``process``.env?NODE_ENV = "development")

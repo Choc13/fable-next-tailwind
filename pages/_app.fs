@@ -16,7 +16,7 @@ type App(initialProps) =
     inherit PureStatelessComponent<obj>(initialProps)
 
     // Required to force server side rendering which is necessary for generating a nonce on each request
-    static member getInitialProps(ctx) = Next.App<_, _, _>.getInitialProps(ctx)
+    static member getInitialProps(ctx) = Next.App<_, _, _>.getInitialProps (ctx)
 
     override this.render() =
         fragment [] [
@@ -30,4 +30,4 @@ type App(initialProps) =
             Footer.view
         ]
 
-exportDefault jsConstructor<App> 
+exportDefault jsConstructor<App>

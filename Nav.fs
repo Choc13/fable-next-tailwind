@@ -1,7 +1,10 @@
 module Nav
 
+open Fable.Core.JsInterop
 open Fable.React
 open Fable.React.Props
+open Next.Image
+open Next.Link
 
 type private MenuState =
     | Open
@@ -13,20 +16,33 @@ module private MenuState =
         | Open -> Closed
         | Closed -> Open
 
-let private navItem isCta href ariaLabel children =
-    a
-        [ Href href
-          ClassName(
-              [ "no-underline px-4 py-2 rounded-full"
-                if isCta then
-                    "bg-secondary hover:bg-purple-light"
-                else
-                    "hover:bg-purple-light hover:bg-opacity-50" ]
-              |> String.concat " "
-          )
-          Rel "noopener"
-          AriaLabel ariaLabel ]
-        children
+type NavHref =
+    | Internal of string
+    | External of string
+
+let private navItem isCta (href: string) ariaLabel children =
+    let aClass =
+        [ "no-underline px-4 py-2 rounded-full"
+          if isCta then
+              "bg-secondary hover:bg-purple-light"
+          else
+              "hover:bg-purple-light hover:bg-opacity-50" ]
+        |> String.concat " "
+
+    if href.StartsWith('/') then
+        link [ Href !^href ] [
+            a
+                [ AriaLabel ariaLabel
+                  ClassName aClass ]
+                children
+        ]
+    else
+        a
+            [ AriaLabel ariaLabel
+              HTMLAttr.Href href
+              ClassName aClass
+              Rel "noopener" ]
+            children
 
 let View =
     FunctionComponent.Of(
@@ -36,14 +52,15 @@ let View =
             nav [ ClassName
                       "select-none bg-primary text-white lg:flex lg:items-center w-full px-5 py-2.5 space-y-10 lg:space-y-0" ] [
                 div [ ClassName "flex items-center h-12" ] [
-                    a [ Href "/"
-                        Rel "home"
-                        ClassName "hover:bg-grey-dark p-4"
-                        AriaLabel "home" ] [
-                        img [ Alt "Symbolica" // TODO: Use next/image
-                              HTMLAttr.Height 30
-                              HTMLAttr.Width 160
-                              Src "/full-logo-30.png" ]
+                    link [ Href !^ "/" ] [
+                        a [ AriaLabel "home"
+                            ClassName "hover:bg-grey-dark p-4"
+                            Rel "home" ] [
+                            image [ !^(Alt "Symbolica")
+                                    !^(Height !^30)
+                                    !^(Width !^160)
+                                    !^(Src !^ "/full-logo-30.png") ]
+                        ]
                     ]
                     button [ ClassName "block lg:hidden cursor-pointer ml-auto w-12 h-12"
                              OnClick(fun _ -> state.update MenuState.toggle) ] [
@@ -62,7 +79,7 @@ let View =
                     div [ ClassName "flex flex-col items-start lg:flex-row lg:justify-end ml-auto gap-2" ] [
                         navItem false "https://dev.to/symbolica" "Blog" [ str "Blog" ]
                         navItem false "https://github.com/SymbolicaDev" "GitHub" [ Icons.gitHub 30 ]
-                        navItem true "https://playground.symbolica.com" "Try Free" [ str "Try Free" ]
+                        navItem true "/playground" "Try Free" [ str "Try Free" ]
                     ]
                 ]
             ]),
