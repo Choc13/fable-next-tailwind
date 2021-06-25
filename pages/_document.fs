@@ -25,46 +25,51 @@ let csp nonce isDev =
     $"""
 default-src;
 script-src {nonceDirective} 'strict-dynamic' 'unsafe-eval' 'unsafe-inline';
-style-src {if isDev then
-               "*"
-           else
-               nonceDirective} 'unsafe-inline';
+style-src {if isDev then "*" else nonceDirective} 'unsafe-inline';
 img-src 'self';
 font-src https://fonts.gstatic.com;
 frame-src https://app.netlify.com;
-{if isDev then "connect-src 'self';" else ""}
+{if isDev then
+     "connect-src 'self';"
+ else
+     ""}
 base-uri 'none';
 form-action 'none';
 frame-ancestors 'none';
-{if isDev then "" else "require-trusted-types-for 'script'"};
+{if isDev then
+     ""
+ else
+     "require-trusted-types-for 'script'"};
 upgrade-insecure-requests;
 block-all-mixed-content;
 report-uri https://symbolica.report-uri.com/r/d/csp/enforce"""
         .Replace(System.Environment.NewLine, "")
 
+type DocumentProps =
+    abstract Nonce : string
+    inherit Next.DocumentProps
+
 [<AttachMembers>]
 type Document(initialProps) =
-    inherit Next.Document<obj>(initialProps)
+    inherit Next.Document<DocumentProps>(initialProps)
 
-    static member getInitialProps(ctx: obj) =
+    static member getInitialProps(ctx) =
         promise {
             let! initialProps = Next.Document<_>.getInitialProps (ctx)
-            let nonce = "anonce"
+            let nonce = "anonce" // TODO: Generate a proper nonce
 
             let csp =
                 csp nonce (``process``.env?NODE_ENV = "development")
 
-            match ctx?res with
-            | Some res -> res?setHeader ("Content-Security-Policy", csp)
+            match ctx.res with
+            | Some res -> res.setHeader ("Content-Security-Policy", !!csp)
             | None -> ()
 
-            let nextProps = initialProps
-            nextProps?Nonce <- nonce
-            return nextProps
+            return JS.Constructors.Object.assign (createEmpty<DocumentProps>, initialProps, {| Nonce = nonce |})
         }
 
     override this.render() =
-        let nonce = this.props?Nonce
+        let nonce = this.props.Nonce
 
         Next.Document.html [ Lang "en" ] [
             Next.Document.head [ Next.Document.Nonce nonce ] [

@@ -12,6 +12,7 @@
     <Compile Include="pages/index.fs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Fable.Browser.Dom" Version="2.4.4" />
     <PackageReference Include="Fable.Core" Version="3.2.8" />
     <PackageReference Include="Fable.NextJs" Version="0.5.3" />
     <PackageReference Include="Fable.Node" Version="1.2.0" />
