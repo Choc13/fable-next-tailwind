@@ -36,4 +36,5 @@ yarn-error.log*
 # .NET
 obj/
 bin/
-dist/
+dist/*
+!dist/public

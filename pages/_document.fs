@@ -1,6 +1,5 @@
 module Pages.Document
 
-open Browser
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.React
