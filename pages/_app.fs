@@ -1,5 +1,6 @@
 module Pages.App
 
+open Fable.Core
 open Fable.Core.JsInterop
 open Fable.React
 open NextJS
@@ -10,21 +11,23 @@ type AppProps =
     { Component: ReactElementType<obj>
       PageProps: obj }
 
-let app =
-    FunctionComponent.Of(
-        (fun { Component = pageComponent
-               PageProps = pageProps } ->
-            fragment [] [
-                Next.Head(
-                    Head.children [ title [] [ str "Symbolica" ]
-                                    meta [ Props.Name "viewport"
-                                           Props.Content "width=device-width, initial-scale=1.0" ] ]
-                )
-                Nav.View()
-                ReactElementType.create pageComponent pageProps []
-                Footer.view
-            ]),
-        memoizeWith = equalsButFunctions
-    )
+[<AttachMembers>]
+type App(initialProps) =
+    inherit PureStatelessComponent<obj>(initialProps)
 
-app |> exportDefault
+    // Required to force server side rendering which is necessary for generating a nonce on each request
+    static member getInitialProps(ctx: obj) = Next.App<_>.getInitialProps(ctx)
+
+    override this.render() =
+        fragment [] [
+            Next.Head(
+                Head.children [ title [] [ str "Symbolica" ]
+                                meta [ Props.Name "viewport"
+                                       Props.Content "width=device-width, initial-scale=1.0" ] ]
+            )
+            Nav.View()
+            ReactElementType.create this.props?Component this.props?pageProps []
+            Footer.view
+        ]
+
+exportDefault jsConstructor<App> 

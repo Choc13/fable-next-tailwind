@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "clean": "dotnet fable clean --yes && rm -rf dist",
     "dev": "dotnet fable watch -s -o dist --run next dev dist",
     "build": "dotnet fable -o dist --run next build dist",
-    "start": "next start"
+    "start": "next start dist"
   },
   "dependencies": {
     "next": "^11.0.1",

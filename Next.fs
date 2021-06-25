@@ -1,10 +1,17 @@
 module Next
 
-open Browser
 open Fable.Core
 open Fable.Core.JsInterop
 open Fable.React
 open Fable.React.Props
+
+type AppProps<'P> = 'P
+
+[<AbstractClass; ImportDefault("next/app")>]
+type App<'P>(initialProps) =
+    inherit PureStatelessComponent<AppProps<'P>>(initialProps)
+
+    static member getInitialProps(ctx: obj) : JS.Promise<obj> = jsNative
 
 type DocumentProps<'P> = 'P
 
